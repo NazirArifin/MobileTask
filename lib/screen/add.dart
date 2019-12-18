@@ -12,11 +12,26 @@ class _AddScreenState extends State<AddScreen> {
   final _jenisController = TextEditingController();
   final _kakiController = TextEditingController();
 
+  Animal _diedit;
+  _setAnimal(Animal a) {
+    setState(() {
+      _diedit = a;
+      _namaController.text = a.nama;
+      _jenisController.text = a.jenis;
+      _kakiController.text = a.jumlahKaki.toString();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    final Animal args = ModalRoute.of(context).settings.arguments;
+    if (args != null) {
+      _setAnimal(args);
+    }
+
     return Scaffold(
       appBar: AppBar(
-        title: Text('Tambah Animal'),
+        title: _diedit == null ? Text('Tambah Animal') : Text('Edit Animal'),
       ),
       body: Container(
         constraints: BoxConstraints.expand(),
@@ -28,7 +43,7 @@ class _AddScreenState extends State<AddScreen> {
               // judul
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 30),
-                child: Text('Tambah Animal', style: TextStyle(
+                child: Text((_diedit != null ? 'Edit' : 'Tambah') + ' Animal', style: TextStyle(
                   fontSize: 24
                 ), textAlign: TextAlign.center),
               ),
@@ -70,6 +85,7 @@ class _AddScreenState extends State<AddScreen> {
                       var jenis = _jenisController.text;
                       var kaki = _kakiController.text;
                       var animal = Animal(
+                        id: 1,
                         nama: namanya, 
                         jenis: jenis, 
                         kode: 'cat', 

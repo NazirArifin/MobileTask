@@ -16,10 +16,16 @@ class _ListScreenState extends State<ListScreen> {
 
     setState(() {
       _list.add(Animal(
-        kode: 'dog', nama: 'Anjing', jenis: 'mamalia', jumlahKaki: 4
+        id: 1, kode: 'dog', nama: 'Anjing', jenis: 'mamalia', jumlahKaki: 4
       ));
       _list.add(Animal(
-        kode: 'cat', nama: 'Kucing', jenis: 'mamalia', jumlahKaki: 4
+        id: 2, kode: 'cat', nama: 'Kucing', jenis: 'mamalia', jumlahKaki: 4
+      ));
+      _list.add(Animal(
+        id: 3, kode: 'lion', nama: 'Singa', jenis: 'mamalia', jumlahKaki: 4
+      ));
+      _list.add(Animal(
+        id: 4, kode: 'fish', nama: 'Ikan', jenis: 'ikan', jumlahKaki: 0
       ));
     });
   }
@@ -54,17 +60,28 @@ class _ListScreenState extends State<ListScreen> {
         appBar: AppBar(
           title: Text('Animals'),
           actions: <Widget>[
-            IconButton(
-              icon: Icon(Icons.add),
-              onPressed: () {
-                Navigator.pushNamed(context, '/add');
-              },
+            AnimatedOpacity(
+              duration: Duration(milliseconds: 700),
+              opacity: _terpilih == null ? 0 : 1,
+              child: IconButton(
+                icon: Icon(Icons.edit),
+                onPressed: () {
+                  Navigator.pushNamed(context, '/add', arguments: _terpilih);
+                },
+              ),
             ),
-            _terpilih == null ? Container() : IconButton(
-              icon: Icon(Icons.delete),
-              onPressed: () {
-                
-              },
+            AnimatedOpacity(
+              duration: Duration(milliseconds: 700),
+              opacity: _terpilih == null ? 0 : 1,
+              child: IconButton(
+                icon: Icon(Icons.delete),
+                onPressed: () {
+                  setState(() {
+                    _list.removeWhere((a) => a.id == _terpilih.id);
+                    _terpilih = null;
+                  });
+                },
+              ),
             )
           ],
         ),
@@ -80,21 +97,31 @@ class _ListScreenState extends State<ListScreen> {
                 });
               },
               onTap: () {
-                Navigator.pushNamed(context, '/detail', arguments: animal);
+                if (_terpilih != null) {
+                  setState(() {
+                    _terpilih = null;
+                  });
+                } else {
+                  Navigator.pushNamed(context, '/detail', arguments: animal);
+                }
               },
-              child: ListTile(
-                leading: Hero(
-                  tag: animal,
-                  child: CircleAvatar(
-                    backgroundColor: Colors.red,
-                    backgroundImage: NetworkImage('https://loremflickr.com/480/480/' + animal.kode)
+              child: AnimatedContainer(
+                duration: Duration(milliseconds: 700),
+                color: _terpilih != null && _terpilih.id == animal.id ? Colors.grey : Colors.transparent,
+                child: ListTile(
+                  leading: Hero(
+                    tag: animal,
+                    child: CircleAvatar(
+                      backgroundColor: Colors.red,
+                      backgroundImage: NetworkImage('https://loremflickr.com/480/480/' + animal.kode)
+                    ),
                   ),
+                  title: Text(animal.nama),
+                  trailing: Text('${animal.jumlahKaki}', style: TextStyle(
+                    fontSize: 30
+                  )),
+                  subtitle: Text('Jenis: ' + animal.jenis),
                 ),
-                title: Text(animal.nama),
-                trailing: Text('${animal.jumlahKaki}', style: TextStyle(
-                  fontSize: 30
-                )),
-                subtitle: Text('Jenis: ' + animal.jenis),
               ),
             );
           },
