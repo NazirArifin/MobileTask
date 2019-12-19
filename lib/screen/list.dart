@@ -65,8 +65,16 @@ class _ListScreenState extends State<ListScreen> {
               opacity: _terpilih == null ? 0 : 1,
               child: IconButton(
                 icon: Icon(Icons.edit),
-                onPressed: () {
-                  Navigator.pushNamed(context, '/add', arguments: _terpilih);
+                onPressed: () async {
+                  final dynamic result = await Navigator.pushNamed(context, '/add', arguments: _terpilih);
+                  if (result != null) {
+                    setState(() {
+                      // remove yang idnya sama
+                      final index = _list.indexWhere((v) => result.id == v.id);
+                      _list[index] = result;
+                      _terpilih = null;
+                    });
+                  }
                 },
               ),
             ),
@@ -107,7 +115,7 @@ class _ListScreenState extends State<ListScreen> {
               },
               child: AnimatedContainer(
                 duration: Duration(milliseconds: 700),
-                color: _terpilih != null && _terpilih.id == animal.id ? Colors.grey : Colors.transparent,
+                color: _terpilih != null && _terpilih.id == animal.id ? Colors.blue.shade100 : Colors.transparent,
                 child: ListTile(
                   leading: Hero(
                     tag: animal,
